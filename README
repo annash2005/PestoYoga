@@ -1,0 +1,50 @@
+# PestoYoga
+
+A web application that provides real-time feedback on yoga poses and customized exercise recommendations.
+
+## Project Overview
+PestoYoga helps users maintain proper form during yoga practice by providing real-time pose feedback and corrections. Originally conceived as a physical therapy app, it evolved to serve a broader audience while maintaining its core focus on proper form and personalized exercise guidance.
+
+## Features
+- Real-time pose detection and form correction
+- Custom exercise recommendations based on user needs
+- Form feedback using Google AI PoseLandmarker
+- Personalized health requirement considerations
+
+## Tech Stack
+- Frontend: HTML/CSS, JavaScript
+- Backend: Express
+- AI Integration: Google AI PoseLandmarker
+- Real-time pose detection and analysis
+
+## Installation
+1. Clone the repository
+2. Install dependencies:
+```bash
+npm install
+```
+3. Start the server:
+```bash
+npm start
+```
+
+## Future Improvements
+- **Expand Content**: Add more exercises, stretches, and poses
+- **Speed Optimization**: Improve program efficiency
+- **Mobile App Development**: Convert to mobile app with progress tracking
+- **AI Enhancement**: Implement real-time exercise suggestions based on progress/fitness goals
+
+## Developed By
+- Anushree Atmakuri
+- Anhiti Mandal
+- Anna Shukhter
+- Rashmi Alawani
+
+## Project Reflection
+### Successes
+- Strong teamwork and collaboration
+- Effective problem-solving approach
+
+### Challenges
+- Technical difficulties with initial tech stack
+- Managing scope of large-scale project
