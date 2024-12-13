@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Yoga-ChatBot </title>
+    <style>
+        /* General Styles */
+        body {
+            background: linear-gradient(135deg, #f0f9ff, #dff8e1); /* Soft gradient background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        /* Menu container styling */
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu-item {
+            padding: 15px 30px;
+            margin: 10px;
+            background: linear-gradient(135deg, #007f8b, #04AA6D);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 25px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item:hover {
+            background: linear-gradient(135deg, #04AA6D, #028A6C);
+            transform: scale(1.05);
+        }
+
+        /* Exercise container styling */
+        .exercise-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .exercise-card {
+            background-color: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .exercise-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .exercise-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 2px solid #04AA6D;
+        }
+
+        .exercise-card h3 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .exercise-card p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        /* Help button styling */
+        .help-link {
+            background-color: #ffa500;
+            color: white;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            grid-column: span 4; /* Span across 3 columns */
+            justify-self: center; /* Center the button in the grid */
+        }
+
+
+        .help-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .exercise-card img {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to Pesto YogaBot!</h1>
+
+    <div class="menu-container">
+        <button class="menu-item" id="create-workout-btn">Create a workout</button>
+        <a href="list.html" class="menu-item">Help me fix my form for a position</a>
+    </div>
+
+    <div class="exercise-container" id="exercise-container">
+        <h2>Select a workout type</h2>
+        <button class="menu-item exercise-btn" data-workout="arms">Arms</button>
+        <button class="menu-item exercise-btn" data-workout="legs">Legs</button>
+        <button class="menu-item exercise-btn" data-workout="full-body">Full Body</button>
+
+        <div id="exercise-links" class="exercise-grid"></div>
+    </div>
+
+    <script type="module">
+        const workoutBtn = document.getElementById('create-workout-btn');
+        const exerciseContainer = document.getElementById('exercise-container');
+        const exerciseBtns = document.querySelectorAll('.exercise-btn');
+        const exerciseLinksDiv = document.getElementById('exercise-links');
+        const menuContainer = document.querySelector('.menu-container');
+
+        // Simulated data from the CSV
+        const exercises = [
+            { name: "Forearm Stand (Pincha Mayurasana)", image: "poseimage/Forearm Stand (Pincha Mayurasana).jpeg", description: "A challenging forearm balance." },
+            { name: "Plank Pose (Phalakasana)", image: "poseimage/Plank Pose (Phalakasana).jpeg", description: "Core strengthening pose." },
+            { name: "Seated Forward Bend (Paschimottanasana)", image: "poseimage/Seated Forward Bend (Paschimottanasana).jpeg", description: "A deep hamstring stretch." },
+            { name: "Tree Pose (Vrksasana)", image: "poseimage/Tree Pose (Vrksasana).jpeg", description: "A standing balance pose." },
+            { name: "Crescent Lunge Pose (Alanasana)", image: "poseimage/Crescent Lunge Pose (Alanasana).jpeg", description: "A crescent-shaped lunge." },
+            { name: "Warrior II Pose (Virabhadrasana II)", image: "poseimage/Warrior II Pose (Virabhadrasana II).png", description: "A warrior pose for leg and hip strength." }
+        ];
+
+        // Exercise types mapping
+        const exerciseTypes = {
+            arms: [exercises[3], exercises[4], exercises[1], exercises[5], ],
+            legs: [exercises[3], exercises[4], exercises[2], exercises[5]],
+            "full-body": [exercises[3], exercises[4], exercises[0], exercises[5]]
+        };
+
+        workoutBtn.addEventListener('click', () => {
+            exerciseContainer.style.display = 'flex';
+        });
+
+        exerciseBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const workoutType = btn.getAttribute('data-workout');
+                showExercises(workoutType);
+                // Hide the other workout options
+                exerciseBtns.forEach(button => button.style.display = 'none');
+            });
+        });
+
+        function showExercises(workoutType) {
+            exerciseLinksDiv.innerHTML = ''; // Clear previous exercises
+
+            // Get exercises based on workout type
+            const selectedExercises = exerciseTypes[workoutType];
+
+            selectedExercises.forEach(exercise => {
+                // Create a card for each exercise
+                const card = document.createElement('div');
+                card.classList.add('exercise-card');
+
+                const img = document.createElement('img');
+                const imageUrls = [
+                    exercise.image.replace('.jpeg', '.jpeg'),
+                    exercise.image.replace('.jpeg', '.png')
+                ];
+
+                loadImage(img, imageUrls); // Load image using the helper function
+
+                const name = document.createElement('h3');
+                name.textContent = exercise.name;
+
+                const description = document.createElement('p');
+                description.textContent = exercise.description;
+
+                // Create a link to view details of the pose
+                const viewLink = document.createElement('a');
+                viewLink.textContent = 'View Pose';
+                viewLink.classList.add('exercise-link');
+                viewLink.href = 'view.html'; // Redirect to view page
+                viewLink.onclick = function() {
+                    localStorage.setItem('selectedPose', exercise.name); // Store the selected pose name
+                };
+
+                card.appendChild(img);
+                card.appendChild(name);
+                card.appendChild(description);
+                card.appendChild(viewLink); // Append the link to the card
+
+                exerciseLinksDiv.appendChild(card);
+            });
+
+            // Optionally, add a link to get help with a pose
+            const helpLink = document.createElement('a');
+            helpLink.href = 'list.html';  // Redirect to help page
+            helpLink.textContent = 'Need help with a pose?';
+            helpLink.classList.add('help-link');
+            exerciseLinksDiv.appendChild(helpLink);
+        }
+
+// Helper function to try loading .jpeg and .png formats
+        function loadImage(imageElement, urls) {
+            (async () => {
+                for (const url of urls) {
+                    if (await imageExists(url)) {
+                        imageElement.src = url;
+                        return;
+                    }
+                }
+                imageElement.alt = 'Image not found'; // Fallback if no image is found
+            })();
+        }
+
+    // Function to check if an image exists
+        function imageExists(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
+    </script>
+
+</body>
+</html>

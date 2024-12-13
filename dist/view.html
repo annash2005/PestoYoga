@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - MediaPipe Pose Landmarker Task for web</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!-- Copyright 2023 The MediaPipe Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+<link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+</script>
+
+<body>
+  <h1>Pose detection using Pesto</h1>
+
+  <section id="demos">
+    <h2>Demo: Detecting Images</h2>
+    <p><b>Click on an image below</b> to see the key landmarks of the body.</p>
+  
+    <div class="demo-container">
+      <div class="demo-text">
+        <p>Pose detection uses key landmarks on the body to analyze posture. Click the image to see the detection process in action.</p>
+      </div>
+  
+      <div class="detectOnClick image-container">
+        <img src="" crossorigin="anonymous" title="Click to get detection!" id='poseImage'/>
+      </div>
+    </div>
+  </section>
+  
+
+    <!-- <h2>Demo: Webcam continuous pose landmarks detection</h2>
+    <p>Stand in front of your webcam to get real-time pose landmarker detection.</br>Click <b>enable webcam</b> below and grant access to the webcam if prompted.</p> -->
+
+    <div id="liveView" class="videoView">
+      <button id="webcamButton" class="mdc-button mdc-button--raised">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">ENABLE WEBCAM</span>
+      </button>
+      <div style="position: relative;">
+        <video id="webcam" style="width: 1280px; height: 720px; position: abso" autoplay playsinline></video>
+        <canvas class="output_canvas" id="output_canvas" width="1280" height="720" style="position: absolute; left: 0px; top: 0px;"></canvas>
+      </div>
+    </div>
+  </section>
+<!-- partial -->
+<div id= "feedback" style="font-size: 30px;"> loading</div>
+  <script type="module" src="./script.js"></script>
+  <script> 
+    const poseName = localStorage.getItem('selectedPose');
+
+// Check if poseName is available
+if (poseName) {
+    const poseImage = document.getElementById('poseImage');
+
+    // Create an array of possible image URLs
+    const imageUrls = [
+        // `poseimage/${poseName}.jpeg`,
+        `poseimage/${poseName}.png`
+    ];
+
+    // Function to check if image exists
+    function imageExists(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    }
+
+    // Check for the existence of the images
+    (async () => {
+        for (const url of imageUrls) {
+            if (await imageExists(url)) {
+                poseImage.src = url; // Set the image source if it exists
+                return; // Exit the loop if a valid image is found
+            }
+        }
+        // If no image is found, you can hide the image or show a placeholder
+        poseImage.alt = "Image not found"; // Optional: change the alt text if image not found
+        poseImage.src = ""; // Optional: clear the image source
+    })();
+} else {
+    // If no pose name is found, hide the image
+    document.getElementById('poseContainer').style.display = 'none';
+}
+  </script>
+
+</body>
+</html>

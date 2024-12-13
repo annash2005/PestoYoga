@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga Pose List</title>
+    <style>
+        /* General Styles */
+        body {
+            background: linear-gradient(135deg, #f0f9ff, #dff8e1); /* Soft gradient background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Tab container */
+        .tab-container {
+            background-color: #333;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-container a {
+            padding: 15px 30px;
+            margin: 0 10px;
+            background: linear-gradient(135deg, #007f8b, #04AA6D); /* Gradient styling */
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-container a:hover {
+            background: linear-gradient(135deg, #04AA6D, #028A6C);
+            transform: scale(1.05);
+        }
+
+        .tab-container a.active {
+            background-color: #04AA6D;
+        }
+
+        /* Heading styles */
+        h1 {
+            font-size: 3.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 40px 0 20px;
+            color: #333;
+        }
+
+        /* Search bar */
+        #searchInput {
+            display: block;
+            margin: 20px auto;
+            padding: 15px;
+            width: 80%;
+            max-width: 800px; /* Made it wider */
+            border: 2px solid #04AA6D;
+            border-radius: 25px;
+            font-size: 1.3em;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        #searchInput:focus {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Grid layout for Yoga Poses */
+        .yoga-poses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Larger images */
+            gap: 30px; /* Increased gap for better spacing */
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto; /* Center the grid */
+        }
+
+        /* Pose card styling */
+        .pose-card {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow for depth */
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        /* Larger images */
+        .pose-card img {
+            width: 100%;
+            height: 250px; /* Increased height */
+            object-fit: cover;
+            border-bottom: 2px solid #04AA6D; /* Accent color */
+        }
+
+        .pose-card p {
+            padding: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Hover effect */
+        .pose-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            #searchInput {
+                width: 90%;
+            }
+
+            .yoga-poses-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust for smaller screens */
+            }
+
+            .pose-card img {
+                height: 200px; /* Slightly smaller for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tab-container">
+        <a href="index.html">Home</a>
+        <a href="list.html" class="active">Poses</a>
+        <a href="menuChat.html">Chat</a>
+    </div>
+
+    <div class="content">
+        <h1>Yoga Poses</h1>
+        <input type="text" id="searchInput" placeholder="Search for a pose..." onkeyup="filterPoses()">
+        
+        <!-- Yoga poses grid container -->
+        <div id="poseList" class="yoga-poses-grid"></div>
+    </div>
+
+    <script type="module">
+        let allPoses = []; // Store all poses for filtering
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('poses.csv')
+                .then(response => response.text())
+                .then(data => {
+                    allPoses = parseCSV(data); // Store the parsed data in allPoses
+                    renderPoses(allPoses); // Initially render all poses
+                });
+
+            function parseCSV(data) {
+                const rows = data.split('\n').slice(1); // Skip header row
+                return rows.map(row => {
+                    const [name, image, description] = row.split(',');
+                    return { name, image, description };
+                });
+            }
+
+            function renderPoses(poses) {
+                const poseList = document.getElementById('poseList');
+                poseList.innerHTML = ''; // Clear the grid before rendering
+
+                poses.forEach(pose => {
+                    const poseDiv = document.createElement('div');
+                    poseDiv.classList.add('pose-item');
+
+                    // Create the pose card
+                    poseDiv.innerHTML = `
+                        <div class="pose-card">
+                            <img class="pose-image" src="" alt="${pose.name}" />
+                            <p>${pose.name}</p>
+                        </div>
+                    `;
+
+                    const poseImage = poseDiv.querySelector('.pose-image');
+                    const imageUrls = [
+                        pose.image.replace('.jpeg', '.jpeg'),
+                        pose.image.replace('.jpeg', '.png')
+                    ];
+
+                    loadImage(poseImage, imageUrls);
+
+                    poseDiv.addEventListener('click', () => {
+                        localStorage.setItem('selectedPose', pose.name);
+                        window.location.href = 'view.html';
+                    });
+
+                    poseList.appendChild(poseDiv);
+                });
+            }
+
+            function loadImage(imageElement, urls) {
+                (async () => {
+                    for (const url of urls) {
+                        if (await imageExists(url)) {
+                            imageElement.src = url;
+                            return;
+                        }
+                    }
+                    imageElement.alt = 'Image not found';
+                })();
+            }
+
+            function imageExists(url) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve(true);
+                    img.onerror = () => resolve(false);
+                    img.src = url;
+                });
+            }
+
+            // Modify the filterPoses function to filter the allPoses array
+            function filterPoses() {
+                const input = document.getElementById('searchInput').value.toLowerCase();
+                const filteredPoses = allPoses.filter(pose => pose.name.toLowerCase().includes(input));
+                renderPoses(filteredPoses); // Re-render the filtered list
+            }
+
+            // Attach filterPoses to the search input event
+            document.getElementById('searchInput').addEventListener('keyup', filterPoses);
+        });
+    </script>
+
+</body>
+</html>
